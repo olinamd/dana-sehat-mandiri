@@ -9,7 +9,9 @@ import WealthSummaryCards from "@/components/wealth/WealthSummaryCards";
 import DebtsTable from "@/components/wealth/DebtsTable";
 import ReceivablesTable from "@/components/wealth/ReceivablesTable";
 import { DebtManagementHeader } from "@/components/wealth/DebtManagementHeader";
+import { Button } from "@/components/ui/button";
 import { useDebtManagement } from "@/hooks/useDebtManagement";
+import { Plus } from "lucide-react";
 
 const DebtManagement = () => {
   const {
@@ -37,11 +39,64 @@ const DebtManagement = () => {
     handleUpdateLiability,
     handleDeleteLiability,
     handleDeleteDebt,
+    // Handler baru untuk Receivable dan Debt
+    handleAddReceivable,
+    handleAddDebt,
   } = useDebtManagement();
+
+  // Handler override untuk AssetForm
+  const onAssetSubmit = (asset) => {
+    handleAddAsset(asset);
+
+    // Jika subcategory "Piutang", tambahkan ke Receivable
+    if (
+      asset.category === "liquid" &&
+      asset.subcategory.toLowerCase() === "piutang"
+    ) {
+      handleAddReceivable({
+        name: asset.name,
+        amount: asset.amount,
+        dueDate: new Date().toISOString().split("T")[0], // default jatuh tempo = hari ini
+        notes: "Piutang ditambahkan dari aset",
+      });
+    }
+  };
+
+  // Handler override untuk LiabilityForm
+  const onLiabilitySubmit = (liability) => {
+    handleAddLiability(liability);
+
+    // Jika subcategory hubungannya hutang, tambahkan juga ke debts
+    if (
+      ["Kredit Pemilikan Rumah", "Kredit Pemilikan Mobil", "Pinjaman Teman", "Pinjaman Keluarga", "Pinjaman Usaha", "Pinjaman Lain - Lain", "Kartu Kredit"].includes(
+        liability.subcategory
+      )
+    ) {
+      handleAddDebt({
+        name: liability.name,
+        category: liability.category,
+        subcategory: liability.subcategory,
+        total: liability.amount,
+        remaining: liability.amount,
+        monthlyPayment: 0,
+        dueDate: new Date().toISOString().split("T")[0],
+        interestRate: 0,
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
       <DebtManagementHeader onAddNew={() => setShowAssetForm(true)} />
+
+      <div className="flex gap-2 pb-2">
+        <Button onClick={() => setShowAssetForm(true)} variant="default" size="sm">
+          <Plus className="w-4 h-4 mr-2" /> Tambah Aset Baru
+        </Button>
+        <Button onClick={() => setShowLiabilityForm(true)} variant="outline" size="sm">
+          <Plus className="w-4 h-4 mr-2" /> Tambah Liabilitas Baru
+        </Button>
+      </div>
 
       <WealthSummaryCards
         totalAssets={totalAssets}
@@ -104,7 +159,7 @@ const DebtManagement = () => {
           setShowAssetForm(false);
           setEditingAsset(undefined);
         }}
-        onSubmit={editingAsset ? handleUpdateAsset : handleAddAsset}
+        onSubmit={editingAsset ? handleUpdateAsset : onAssetSubmit}
         editingAsset={editingAsset}
       />
 
@@ -114,7 +169,7 @@ const DebtManagement = () => {
           setShowLiabilityForm(false);
           setEditingLiability(undefined);
         }}
-        onSubmit={editingLiability ? handleUpdateLiability : handleAddLiability}
+        onSubmit={editingLiability ? handleUpdateLiability : onLiabilitySubmit}
         editingLiability={editingLiability}
       />
     </div>
@@ -122,3 +177,4 @@ const DebtManagement = () => {
 };
 
 export default DebtManagement;
+

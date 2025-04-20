@@ -3,15 +3,13 @@ import { useState } from "react";
 import { Asset, Liability } from "@/types/assets";
 import { DebtItem, ReceivableItem } from "@/types";
 import { toast } from "sonner";
-
-// Mock data moved to a separate file to keep the hook focused
 import { mockAssets, mockLiabilities, mockDebts, mockReceivables } from "@/data/mockFinancialData";
 
 export const useDebtManagement = () => {
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [liabilities, setLiabilities] = useState<Liability[]>(mockLiabilities);
   const [debts, setDebts] = useState<DebtItem[]>(mockDebts);
-  const [receivables] = useState<ReceivableItem[]>(mockReceivables);
+  const [receivables, setReceivables] = useState<ReceivableItem[]>(mockReceivables);
   const [showAssetForm, setShowAssetForm] = useState(false);
   const [showLiabilityForm, setShowLiabilityForm] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset>();
@@ -24,6 +22,18 @@ export const useDebtManagement = () => {
   const handleAddAsset = (newAsset: Omit<Asset, "id">) => {
     setAssets(prev => [...prev, { ...newAsset, id: prev.length + 1 }]);
     toast.success("Aset berhasil ditambahkan");
+  };
+
+  // Handler baru menambah Receivable (Piutang)
+  const handleAddReceivable = (receivable: Omit<ReceivableItem, "id">) => {
+    setReceivables(prev => [
+      ...prev,
+      {
+        ...receivable,
+        id: prev.length + 1,
+      },
+    ]);
+    toast.success("Piutang berhasil ditambahkan dari aset");
   };
 
   const handleEditAsset = (asset: Asset) => {
@@ -49,6 +59,18 @@ export const useDebtManagement = () => {
   const handleAddLiability = (newLiability: Omit<Liability, "id">) => {
     setLiabilities(prev => [...prev, { ...newLiability, id: prev.length + 1 }]);
     toast.success("Liabilitas berhasil ditambahkan");
+  };
+
+  // Handler baru menambah Debt (Hutang)
+  const handleAddDebt = (debt: Omit<DebtItem, "id">) => {
+    setDebts(prev => [
+      ...prev,
+      {
+        ...debt,
+        id: prev.length + 1,
+      },
+    ]);
+    toast.success("Hutang berhasil ditambahkan dari liabilitas");
   };
 
   const handleEditLiability = (liability: Liability) => {
@@ -101,5 +123,8 @@ export const useDebtManagement = () => {
     handleUpdateLiability,
     handleDeleteLiability,
     handleDeleteDebt,
+    // handler baru untuk integrasi
+    handleAddReceivable,
+    handleAddDebt,
   };
 };
