@@ -1,11 +1,14 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { PlusCircle, ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { Asset, Liability } from "@/types/assets";
-import { formatRupiah } from "@/utils/formatters";
+import { DebtItem, ReceivableItem } from "@/types/index";
+import { formatRupiah, formatDate } from "@/utils/formatters";
 import { toast } from "sonner";
 import AssetsList from "@/components/wealth/AssetsList";
 import LiabilitiesList from "@/components/wealth/LiabilitiesList";
@@ -51,9 +54,51 @@ const mockLiabilities: Liability[] = [
   },
 ];
 
+// Mock data for debts
+const mockDebts: DebtItem[] = [
+  {
+    id: 1,
+    name: "KPR Rumah",
+    total: 800000000,
+    remaining: 650000000,
+    monthlyPayment: 7500000,
+    dueDate: "2033-05-15",
+    interestRate: 9.5,
+  },
+  {
+    id: 2,
+    name: "Kredit Mobil",
+    total: 300000000,
+    remaining: 180000000,
+    monthlyPayment: 5300000,
+    dueDate: "2026-08-22",
+    interestRate: 7.5,
+  }
+];
+
+// Mock data for receivables
+const mockReceivables: ReceivableItem[] = [
+  {
+    id: 1,
+    name: "Pinjaman ke Teman",
+    amount: 5000000,
+    dueDate: "2023-07-30",
+    notes: "Untuk biaya pendidikan anak"
+  },
+  {
+    id: 2,
+    name: "Investasi Bisnis",
+    amount: 25000000,
+    dueDate: "2023-12-15",
+    notes: "Pengembalian modal usaha kuliner"
+  }
+];
+
 const DebtManagement = () => {
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [liabilities, setLiabilities] = useState<Liability[]>(mockLiabilities);
+  const [debts] = useState<DebtItem[]>(mockDebts);
+  const [receivables] = useState<ReceivableItem[]>(mockReceivables);
 
   const totalAssets = assets.reduce((sum, asset) => sum + asset.amount, 0);
   const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount, 0);
