@@ -55,13 +55,38 @@ export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
   const [sortBy, setSortBy] = useState<'date' | 'category' | 'amount'>('date');
   const [filterBy, setFilterBy] = useState<'all' | 'date' | 'category' | 'subCategory'>('all');
+  const [filterValue, setFilterValue] = useState<string | null>(null);
+
+  // Mendapatkan nilai unik untuk filter
+  const getUniqueDates = (): string[] => {
+    return Array.from(new Set(transactions.map(t => t.date)));
+  };
+  const getUniqueCategories = (): string[] => {
+    return Array.from(new Set(transactions.map(t => t.mainCategory)));
+  };
+  const getUniqueSubCategories = (): string[] => {
+    return Array.from(new Set(transactions.map(t => t.subCategory)));
+  };
 
   const filteredTransactions = (type?: 'income' | 'expense') => {
     let filtered = transactions;
-    
+
+    // Filter utama: jenis transaksi (income/expense)
     if (type) {
       filtered = filtered.filter(t => t.type === type);
     }
+
+    // Filter lanjutan sesuai filterBy dan filterValue
+    if (filterBy === "date" && filterValue) {
+      filtered = filtered.filter(t => t.date === filterValue);
+    }
+    if (filterBy === "category" && filterValue) {
+      filtered = filtered.filter(t => t.mainCategory === filterValue);
+    }
+    if (filterBy === "subCategory" && filterValue) {
+      filtered = filtered.filter(t => t.subCategory === filterValue);
+    }
+    // 'all' => tidak perlu filterValue
 
     // Apply sorting
     filtered = [...filtered].sort((a, b) => {
@@ -81,7 +106,7 @@ export const useTransactions = () => {
   };
 
   const deleteTransaction = (id: number) => {
-    setTransactions(prevTransactions => 
+    setTransactions(prevTransactions =>
       prevTransactions.filter(transaction => transaction.id !== id)
     );
   };
@@ -94,5 +119,11 @@ export const useTransactions = () => {
     deleteTransaction,
     setSortBy,
     setFilterBy,
+    filterBy,
+    filterValue,
+    setFilterValue,
+    getUniqueDates,
+    getUniqueCategories,
+    getUniqueSubCategories,
   };
 };
