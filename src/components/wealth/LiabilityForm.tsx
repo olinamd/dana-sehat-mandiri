@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Liability } from "@/types/assets";
+import { Liability, FIXED_LIABILITY_CATEGORIES, HUTANG_CATEGORIES } from "@/types/assets";
 import { toast } from "sonner";
 import { CalendarIcon, User, MapPin, Phone, Mail, FileText } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -25,31 +25,6 @@ interface LiabilityFormProps {
   }) => void;
   editingLiability?: Liability;
 }
-
-const LIABILITY_CATEGORIES = {
-  "short-term": [
-    "Kartu Kredit",
-    "Pinjaman Teman",
-    "Pinjaman Keluarga",
-    "Pinjaman Lain - Lain",
-  ],
-  "long-term": [
-    "Kredit Pemilikan Rumah",
-    "Kredit Pemilikan Mobil",
-    "Pinjaman Usaha",
-    "Pinjaman Lain - Lain",
-  ],
-};
-
-const HUTANG_CATEGORIES = [
-  "Kredit Pemilikan Rumah",
-  "Kredit Pemilikan Mobil",
-  "Pinjaman Teman",
-  "Pinjaman Keluarga",
-  "Pinjaman Usaha",
-  "Pinjaman Lain - Lain",
-  "Kartu Kredit",
-];
 
 export default function LiabilityForm({ isOpen, onClose, onSubmit, editingLiability }: LiabilityFormProps) {
   const [category, setCategory] = useState<"short-term" | "long-term">(
@@ -131,7 +106,7 @@ export default function LiabilityForm({ isOpen, onClose, onSubmit, editingLiabil
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {LIABILITY_CATEGORIES[category].map((item) => (
+                {FIXED_LIABILITY_CATEGORIES[category].map((item) => (
                   <SelectItem key={item} value={item}>
                     {item}
                   </SelectItem>

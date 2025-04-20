@@ -53,7 +53,7 @@ const DebtManagement = () => {
     handleAddAsset(asset);
     if (
       asset.category === "liquid" &&
-      asset.subcategory.toLowerCase() === "piutang"
+      asset.subcategory === "Piutang"
     ) {
       handleAddReceivable({
         name: asset.contactName || asset.name,
@@ -189,19 +189,6 @@ const DebtManagement = () => {
         onSubmit={editingLiability ? handleUpdateLiability : onLiabilitySubmit}
         editingLiability={editingLiability}
       />
-
-      {/* Optionally show Receivable detail info if needed at bottom or modal */}
-      {/* {selectedReceivable && (
-        <div className="fixed z-50 bottom-6 right-6 bg-white rounded p-4 border">
-          <strong>Info Piutang:</strong>
-          <div>Nama: {selectedReceivable.name}</div>
-          <div>Alamat: {selectedReceivable.address}</div>
-          <div>Telepon: {selectedReceivable.phone}</div>
-          <div>Email: {selectedReceivable.email}</div>
-          <div>Keterangan: {selectedReceivable.notes}</div>
-          <Button onClick={() => setSelectedReceivable(null)} variant="outline" size="sm">Tutup</Button>
-        </div>
-      )} */}
     </div>
   );
 };

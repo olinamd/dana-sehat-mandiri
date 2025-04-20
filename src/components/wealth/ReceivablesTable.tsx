@@ -30,8 +30,8 @@ export default function ReceivablesTable({ receivables, onDelete, onNameClick }:
       </TableHeader>
       <TableBody>
         {receivables.map((receivable) => (
-          <>
-            <TableRow key={receivable.id}>
+          <React.Fragment key={receivable.id}>
+            <TableRow>
               <TableCell
                 className="font-medium cursor-pointer text-primary underline"
                 onClick={() => {
@@ -69,7 +69,7 @@ export default function ReceivablesTable({ receivables, onDelete, onNameClick }:
                 </TableCell>
               </TableRow>
             )}
-          </>
+          </React.Fragment>
         ))}
       </TableBody>
     </Table>

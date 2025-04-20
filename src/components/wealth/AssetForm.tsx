@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Asset } from "@/types/assets";
+import { Asset, FIXED_ASSET_CATEGORIES } from "@/types/assets";
 import { toast } from "sonner";
 import { CalendarIcon, User, MapPin, Phone, Mail, FileText } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -25,37 +25,6 @@ interface AssetFormProps {
   }) => void;
   editingAsset?: Asset;
 }
-
-const ASSET_CATEGORIES = {
-  liquid: [
-    "Tabungan",
-    "Piutang",
-    "Nilai Tunai Asuransi Jiwa",
-    "Mata Uang Asing (dalam Rp)",
-  ],
-  investment: [
-    "Trading Forex",
-    "Deposito",
-    "Emas",
-    "Reksa Dana",
-    "Saham",
-    "Mitra Usaha",
-    "Koleksi Seni",
-    "Obligasi",
-    "Properti",
-    "Kendaraan",
-    "Mata Uang Kripto",
-    "Indeks",
-  ],
-  personal: [
-    "Rumah",
-    "Kendaraan",
-    "Koleksi Seni",
-    "Perhiasan",
-    "Elektronik",
-    "Aset Lainnya",
-  ],
-};
 
 export default function AssetForm({ isOpen, onClose, onSubmit, editingAsset }: AssetFormProps) {
   const [category, setCategory] = useState<"liquid" | "investment" | "personal">(
@@ -140,7 +109,7 @@ export default function AssetForm({ isOpen, onClose, onSubmit, editingAsset }: A
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ASSET_CATEGORIES[category].map((item) => (
+                {FIXED_ASSET_CATEGORIES[category].map((item) => (
                   <SelectItem key={item} value={item}>
                     {item}
                   </SelectItem>
