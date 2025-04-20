@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AssetsList from "@/components/wealth/AssetsList";
@@ -11,6 +12,8 @@ import { DebtManagementHeader } from "@/components/wealth/DebtManagementHeader";
 import { Button } from "@/components/ui/button";
 import { useDebtManagement } from "@/hooks/useDebtManagement";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+import { ReceivableItem } from "@/types";
 
 const DebtManagement = () => {
   const {
@@ -40,11 +43,14 @@ const DebtManagement = () => {
     handleDeleteDebt,
     handleAddReceivable,
     handleAddDebt,
+    handleDeleteReceivable,
   } = useDebtManagement();
+
+  // Untuk menampilkan detail info pada nama
+  const [selectedReceivable, setSelectedReceivable] = useState<ReceivableItem | null>(null);
 
   const onAssetSubmit = (asset) => {
     handleAddAsset(asset);
-
     if (
       asset.category === "liquid" &&
       asset.subcategory.toLowerCase() === "piutang"
@@ -154,7 +160,11 @@ const DebtManagement = () => {
         <TabsContent value="receivables">
           <Card>
             <CardContent className="p-0">
-              <ReceivablesTable receivables={receivables} />
+              <ReceivablesTable
+                receivables={receivables}
+                onDelete={handleDeleteReceivable}
+                onNameClick={(item) => setSelectedReceivable(item)}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -179,6 +189,19 @@ const DebtManagement = () => {
         onSubmit={editingLiability ? handleUpdateLiability : onLiabilitySubmit}
         editingLiability={editingLiability}
       />
+
+      {/* Optionally show Receivable detail info if needed at bottom or modal */}
+      {/* {selectedReceivable && (
+        <div className="fixed z-50 bottom-6 right-6 bg-white rounded p-4 border">
+          <strong>Info Piutang:</strong>
+          <div>Nama: {selectedReceivable.name}</div>
+          <div>Alamat: {selectedReceivable.address}</div>
+          <div>Telepon: {selectedReceivable.phone}</div>
+          <div>Email: {selectedReceivable.email}</div>
+          <div>Keterangan: {selectedReceivable.notes}</div>
+          <Button onClick={() => setSelectedReceivable(null)} variant="outline" size="sm">Tutup</Button>
+        </div>
+      )} */}
     </div>
   );
 };
