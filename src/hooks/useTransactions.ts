@@ -2,46 +2,51 @@
 import { useState } from "react";
 import { Transaction } from "@/types";
 
-const mockTransactions = [
+const mockTransactions: Transaction[] = [
   {
     id: 1,
     date: "2023-03-15",
     description: "Gaji Dokter Spesialis",
     amount: 15000000,
-    category: "Pendapatan",
     type: "income" as const,
+    mainCategory: "Pendapatan",
+    subCategory: "Gaji Kerja",
   },
   {
     id: 2,
     date: "2023-03-02",
     description: "Pembayaran Sewa Apartemen",
     amount: 3500000,
-    category: "Perumahan",
     type: "expense" as const,
+    mainCategory: "Perumahan",
+    subCategory: "Sewa",
   },
   {
     id: 3,
     date: "2023-03-05",
     description: "Belanja Bulanan",
     amount: 1200000,
-    category: "Makanan",
     type: "expense" as const,
+    mainCategory: "Makanan",
+    subCategory: "Belanja Basah",
   },
   {
     id: 4,
     date: "2023-03-10",
     description: "Praktek Tambahan",
     amount: 2500000,
-    category: "Pendapatan",
     type: "income" as const,
+    mainCategory: "Pendapatan",
+    subCategory: "Kerja Sampingan",
   },
   {
     id: 5,
     date: "2023-03-12",
     description: "Tagihan Listrik",
     amount: 750000,
-    category: "Utilitas",
     type: "expense" as const,
+    mainCategory: "Utilitas",
+    subCategory: "Listrik",
   },
 ];
 
