@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,11 +5,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { Transaction } from "@/types";
 import { formatRupiah } from "@/utils/formatters";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface MonthlyFullSummaryButtonProps {
-  transactions: Transaction[];
-}
+import { ChevronLeft, ChevronRight, Edit } from "lucide-react";
 
 type Group = "Need" | "Want" | "Save";
 type CategoryMap = Record<
@@ -114,10 +109,20 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
   return Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0]));
 }
 
-const MonthlyFullSummaryButton = ({ transactions }: MonthlyFullSummaryButtonProps) => {
+const defaultBudgets = {
+  Need: 0,
+  Want: 0,
+  Save: 0,
+};
+
+const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[] }) => {
   const monthsSorted = groupTransactionsByMonth(transactions);
   const [open, setOpen] = useState(false);
   const [monthIndex, setMonthIndex] = useState(0);
+
+  const [budgets, setBudgets] = useState<{ Need: number; Want: number; Save: number }>(defaultBudgets);
+  const [editGroup, setEditGroup] = useState<null | "Need" | "Want" | "Save">(null);
+  const [editBudgetValue, setEditBudgetValue] = useState<number>(0);
 
   const monthKeys = monthsSorted.map(([month]) => month);
   const currentMonth = monthsSorted[monthIndex]?.[0] || "";
@@ -152,6 +157,21 @@ const MonthlyFullSummaryButton = ({ transactions }: MonthlyFullSummaryButtonProp
   const subtotalOut = totalNeed + totalWant;
   const totalIncome = INCOME_CATEGORIES.reduce((sum, item) => sum + getIncomeFor(item.sub), 0);
   const sisaAkhirBulan = totalIncome - (totalNeed + totalWant + totalSave);
+
+  // SUM total pengeluaran (need+want+save) untuk footer
+  const totalOut = totalNeed + totalWant + totalSave;
+
+  // Modal edit budget
+  const handleOpenEditBudget = (group: "Need" | "Want" | "Save") => {
+    setEditGroup(group);
+    setEditBudgetValue(budgets[group]);
+  };
+  const handleSaveBudget = () => {
+    if (editGroup) {
+      setBudgets({...budgets, [editGroup]: editBudgetValue });
+      setEditGroup(null);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -210,16 +230,19 @@ const MonthlyFullSummaryButton = ({ transactions }: MonthlyFullSummaryButtonProp
           </div>
           {/* ARUS KAS KELUAR */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {(["Need", "Want", "Save"] as Group[]).map((group) => (
-              <div key={group} className="mb-3 border rounded">
+            {(["Need", "Want", "Save"] as ("Need" | "Want" | "Save")[]).map((group) => (
+              <div key={group} className="mb-3 border rounded relative pb-8">
                 <div className={
                   group === "Need" 
-                    ? "bg-[#D8605B] text-white font-bold py-1 px-2"
+                    ? "bg-[#D8605B] text-white font-bold py-1 px-2 flex justify-between items-center"
                     : group === "Want"
-                      ? "bg-[#FFC914] text-black font-bold py-1 px-2"
-                      : "bg-[#56B870] text-white font-bold py-1 px-2"
+                      ? "bg-[#FFC914] text-black font-bold py-1 px-2 flex justify-between items-center"
+                      : "bg-[#56B870] text-white font-bold py-1 px-2 flex justify-between items-center"
                 }>
-                  {CATEGORY_MAP[group].label}
+                  <span>{CATEGORY_MAP[group].label}</span>
+                  <Button variant="ghost" size="icon" className="ml-2" onClick={() => handleOpenEditBudget(group)}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
                 </div>
                 <table className="w-full text-xs">
                   <thead>
@@ -233,8 +256,10 @@ const MonthlyFullSummaryButton = ({ transactions }: MonthlyFullSummaryButtonProp
                   <tbody>
                     {CATEGORY_MAP[group].categories.map((kat) => {
                       const realisasi = getRealizationFor(kat.main, kat.sub);
-                      // Dummy Budget & Selisih, bisa di-update ke depan
-                      const budget = 0;
+                      // Dummy budget per kategori: bagi budget group secara merata ke seluruh subkategori
+                      const groupBudget = budgets[group];
+                      const budgetEach = groupBudget > 0 ? Math.round(groupBudget / CATEGORY_MAP[group].categories.length) : 0;
+                      const budget = budgetEach;
                       const selisih = budget - realisasi;
                       return (
                         <tr key={kat.label}>
@@ -249,18 +274,26 @@ const MonthlyFullSummaryButton = ({ transactions }: MonthlyFullSummaryButtonProp
                     })}
                     <tr className={`font-bold ${group === "Save" ? "bg-[#eaf7ef]" : group === "Want" ? "bg-[#fff7e2]" : "bg-[#faeaea]"}`}>
                       <td className="py-1 px-2">SUB-TOTAL</td>
-                      <td className="py-1 px-2 text-right text-muted-foreground">{formatRupiah(0)}</td>
+                      <td className="py-1 px-2 text-right text-muted-foreground">{formatRupiah(budgets[group])}</td>
                       <td className="py-1 px-2 text-right">{formatRupiah(getGroupTotal(CATEGORY_MAP[group].categories))}</td>
                       <td className="py-1 px-2 text-right">
-                        {formatRupiah(0 - getGroupTotal(CATEGORY_MAP[group].categories))}
+                        {formatRupiah(budgets[group] - getGroupTotal(CATEGORY_MAP[group].categories))}
                       </td>
                     </tr>
+                    {group === "Want" && (
+                      <tr className="font-bold bg-[#f3f3f3]">
+                        <td colSpan={4} className="py-1 px-2 text-right">
+                          {/* Total pengeluaran setelah sub-total Want */}
+                          TOTAL PENGELUARAN: <span className="text-destructive">{formatRupiah(totalOut)}</span>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
             ))}
           </div>
-          {/* TOTAL AKHIR */}
+          {/* SISA AKHIR BULAN */}
           <div className="mt-2 grid grid-cols-3 gap-2 font-bold">
             <div className="col-span-2 flex items-center justify-end space-x-4">
               <span className="text-gray-700">Sisa Akhir Bulan:</span>
@@ -269,6 +302,32 @@ const MonthlyFullSummaryButton = ({ transactions }: MonthlyFullSummaryButtonProp
             <div />
           </div>
         </div>
+
+        {/* Dialog Edit Budget Per Group */}
+        {editGroup && (
+          <Dialog open={true} onOpenChange={() => setEditGroup(null)}>
+            <DialogContent className="max-w-[320px]">
+              <DialogHeader>
+                <DialogTitle>Edit Budget {CATEGORY_MAP[editGroup].label}</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm">Budget untuk {CATEGORY_MAP[editGroup].label}</label>
+                <input
+                  type="number"
+                  className="border rounded px-2 py-1"
+                  value={editBudgetValue}
+                  min={0}
+                  onChange={e => setEditBudgetValue(Number(e.target.value))}
+                />
+                <div className="flex flex-row-reverse gap-2 mt-2">
+                  <Button onClick={handleSaveBudget} size="sm">Simpan</Button>
+                  <Button variant="outline" onClick={() => setEditGroup(null)} size="sm">Batal</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
       </DialogContent>
     </Dialog>
   );
