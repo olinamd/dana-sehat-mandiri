@@ -87,7 +87,7 @@ const DebtManagement = () => {
         subcategory: liability.subcategory,
         total: liability.amount,
         remaining: liability.amount,
-        monthlyPayment: 0,
+        monthlyPayment: liability.monthlyPayment || 0,
         dueDate: liability.dueDate || new Date().toISOString().split("T")[0],
         interestRate: 0,
         notes: liability.notes ?? "",

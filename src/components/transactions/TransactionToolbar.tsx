@@ -138,7 +138,7 @@ const TransactionToolbar = ({
         </Button>
         <Button size="sm" onClick={onNewTransaction}>
           <PlusCircle className="h-4 w-4 mr-2" />
-          Arus Kas Baru {/* Ganti Transaksi Baru */}
+          Arus Kas Baru
         </Button>
       </div>
     </div>
@@ -146,4 +146,3 @@ const TransactionToolbar = ({
 };
 
 export default TransactionToolbar;
-

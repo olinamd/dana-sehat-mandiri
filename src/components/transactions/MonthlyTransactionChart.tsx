@@ -49,6 +49,15 @@ const MonthlyTransactionChart = ({ transactions }: MonthlyTransactionChartProps)
           <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}jt`} />
           <Tooltip
             formatter={(value: number) => formatRupiah(value)}
+            labelFormatter={(label) => {
+              const [mainCategory, subCategory] = label.split(' - ');
+              return (
+                <div>
+                  <div><strong>Kategori:</strong> {mainCategory}</div>
+                  <div><strong>Subkategori:</strong> {subCategory}</div>
+                </div>
+              );
+            }}
           />
           <Bar dataKey="income" name="Pemasukan" fill="var(--color-income)" />
           <Bar dataKey="expense" name="Pengeluaran" fill="var(--color-expense)" />
@@ -59,4 +68,3 @@ const MonthlyTransactionChart = ({ transactions }: MonthlyTransactionChartProps)
 };
 
 export default MonthlyTransactionChart;
-
