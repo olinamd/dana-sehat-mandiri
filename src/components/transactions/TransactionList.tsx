@@ -5,63 +5,73 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Transaction } from "@/types";
+import MonthlySummaryButton from "./MonthlySummaryButton";
 
 interface TransactionListProps {
   transactions: Transaction[];
   onDeleteTransaction: (id: number) => void;
+  showMonthlySummaryButton?: boolean;
 }
 
-const TransactionList = ({ transactions, onDeleteTransaction }: TransactionListProps) => {
+const TransactionList = ({ transactions, onDeleteTransaction, showMonthlySummaryButton }: TransactionListProps) => {
   const handleDelete = (id: number) => {
     onDeleteTransaction(id);
-    toast.success("Arus Kas berhasil dihapus"); // Ganti label Transaksi -> Arus Kas
+    toast.success("Arus Kas berhasil dihapus");
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Tanggal</TableHead>
-          <TableHead>Deskripsi</TableHead>
-          <TableHead>Kategori</TableHead>
-          <TableHead>Sub Kategori</TableHead>
-          <TableHead className="text-right">Jumlah</TableHead>
-          <TableHead className="text-right">Aksi</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {transactions.map((transaction) => (
-          <TableRow key={transaction.id}>
-            <TableCell>{formatDate(transaction.date)}</TableCell>
-            <TableCell>{transaction.description}</TableCell>
-            <TableCell>{transaction.mainCategory}</TableCell>
-            <TableCell>{transaction.subCategory}</TableCell>
-            <TableCell className="text-right">
-              <div className="flex items-center justify-end gap-2">
-                {transaction.type === "income" ? (
-                  <ArrowUpRight className="h-4 w-4 text-dsm-green" />
-                ) : (
-                  <ArrowDownLeft className="h-4 w-4 text-destructive" />
-                )}
-                <span className={transaction.type === "income" ? "text-dsm-green" : "text-destructive"}>
-                  {formatRupiah(transaction.amount)}
-                </span>
-              </div>
-            </TableCell>
-            <TableCell className="text-right">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleDelete(transaction.id)}
-                className="text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </TableCell>
+    <div>
+      <div className="flex justify-between items-center mb-2">
+        <div className="font-semibold text-base">Riwayat Arus Kas</div>
+        {showMonthlySummaryButton && (
+          <MonthlySummaryButton transactions={transactions} />
+        )}
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Tanggal</TableHead>
+            <TableHead>Deskripsi</TableHead>
+            <TableHead>Kategori</TableHead>
+            <TableHead>Sub Kategori</TableHead>
+            <TableHead className="text-right">Jumlah</TableHead>
+            <TableHead className="text-right">Aksi</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {transactions.map((transaction) => (
+            <TableRow key={transaction.id}>
+              <TableCell>{formatDate(transaction.date)}</TableCell>
+              <TableCell>{transaction.description}</TableCell>
+              <TableCell>{transaction.mainCategory}</TableCell>
+              <TableCell>{transaction.subCategory}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex items-center justify-end gap-2">
+                  {transaction.type === "income" ? (
+                    <ArrowUpRight className="h-4 w-4 text-dsm-green" />
+                  ) : (
+                    <ArrowDownLeft className="h-4 w-4 text-destructive" />
+                  )}
+                  <span className={transaction.type === "income" ? "text-dsm-green" : "text-destructive"}>
+                    {formatRupiah(transaction.amount)}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell className="text-right">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handleDelete(transaction.id)}
+                  className="text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
