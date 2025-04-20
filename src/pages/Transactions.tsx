@@ -6,6 +6,7 @@ import TransactionList from "@/components/transactions/TransactionList";
 import TransactionToolbar from "@/components/transactions/TransactionToolbar";
 import MonthlyTransactionTable from "@/components/transactions/MonthlyTransactionTable";
 import MonthlyTransactionChart from "@/components/transactions/MonthlyTransactionChart";
+import MonthlyFullSummaryButton from "@/components/transactions/MonthlyFullSummaryButton";
 import { useTransactions } from "@/hooks/useTransactions";
 
 const Transactions = () => {
@@ -39,6 +40,10 @@ const Transactions = () => {
         getUniqueCategories={getUniqueCategories}
         getUniqueSubCategories={getUniqueSubCategories}
       />
+
+      <div className="flex flex-wrap gap-4 items-center mb-2">
+        <MonthlyFullSummaryButton transactions={filteredTransactions()} />
+      </div>
 
       {showForm ? (
         <Card>
