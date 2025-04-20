@@ -1,4 +1,3 @@
-
 export type TransactionSubCategory = {
   id: string;
   name: string;
@@ -46,8 +45,8 @@ export const cashFlowCategories = {
       subcategories: [
         { id: 'fresh-groceries', name: 'Belanja Basah' },
         { id: 'dry-groceries', name: 'Belanja Kering' },
-        { id: 'education-anggi', name: 'Pendidikan Anggi' },
-        { id: 'education-arni', name: 'Pendidikan Arni' },
+        { id: 'education-husband', name: 'Pendidikan Suami' },
+        { id: 'education-wife', name: 'Pendidikan Istri' },
         { id: 'transportation', name: 'Transportasi' },
         { id: 'phone-internet', name: 'Telpon & Internet' },
         { id: 'health-medicine', name: 'Obat & Kesehatan' },
