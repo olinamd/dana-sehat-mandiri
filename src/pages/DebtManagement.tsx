@@ -1,17 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, ArrowDown, ArrowUp } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Asset, Liability } from "@/types/assets";
 import { DebtItem, ReceivableItem } from "@/types/index";
-import { formatRupiah, formatDate } from "@/utils/formatters";
 import { toast } from "sonner";
 import AssetsList from "@/components/wealth/AssetsList";
 import LiabilitiesList from "@/components/wealth/LiabilitiesList";
 import AssetForm from "@/components/wealth/AssetForm";
 import LiabilityForm from "@/components/wealth/LiabilityForm";
+import WealthSummaryCards from "@/components/wealth/WealthSummaryCards";
+import DebtsTable from "@/components/wealth/DebtsTable";
+import ReceivablesTable from "@/components/wealth/ReceivablesTable";
 
 const mockAssets: Asset[] = [
   {
@@ -168,37 +169,11 @@ const DebtManagement = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Aset</CardTitle>
-            <ArrowUp className="h-4 w-4 text-dsm-green" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatRupiah(totalAssets)}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Liabilitas</CardTitle>
-            <ArrowDown className="h-4 w-4 text-destructive" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatRupiah(totalLiabilities)}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Kekayaan Bersih</CardTitle>
-            <ArrowUp className="h-4 w-4 text-dsm-green" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatRupiah(netWorth)}</div>
-          </CardContent>
-        </Card>
-      </div>
+      <WealthSummaryCards
+        totalAssets={totalAssets}
+        totalLiabilities={totalLiabilities}
+        netWorth={netWorth}
+      />
 
       <Tabs defaultValue="assets" className="space-y-4">
         <TabsList>
@@ -235,37 +210,7 @@ const DebtManagement = () => {
         <TabsContent value="debts">
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Sisa</TableHead>
-                    <TableHead>Angsuran Bulanan</TableHead>
-                    <TableHead>Jatuh Tempo</TableHead>
-                    <TableHead>Bunga</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {debts.map((debt) => (
-                    <TableRow key={debt.id}>
-                      <TableCell className="font-medium">{debt.name}</TableCell>
-                      <TableCell>{formatRupiah(debt.total)}</TableCell>
-                      <TableCell>{formatRupiah(debt.remaining)}</TableCell>
-                      <TableCell>{formatRupiah(debt.monthlyPayment)}</TableCell>
-                      <TableCell>{formatDate(debt.dueDate)}</TableCell>
-                      <TableCell>{debt.interestRate}%</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-amber-500"></div>
-                          <span className="text-xs">Aktif</span>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DebtsTable debts={debts} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -273,33 +218,7 @@ const DebtManagement = () => {
         <TabsContent value="receivables">
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Jumlah</TableHead>
-                    <TableHead>Jatuh Tempo</TableHead>
-                    <TableHead>Catatan</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {receivables.map((receivable) => (
-                    <TableRow key={receivable.id}>
-                      <TableCell className="font-medium">{receivable.name}</TableCell>
-                      <TableCell>{formatRupiah(receivable.amount)}</TableCell>
-                      <TableCell>{formatDate(receivable.dueDate)}</TableCell>
-                      <TableCell>{receivable.notes}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-dsm-green"></div>
-                          <span className="text-xs">Belum Jatuh Tempo</span>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ReceivablesTable receivables={receivables} />
             </CardContent>
           </Card>
         </TabsContent>
