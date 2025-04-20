@@ -1,3 +1,4 @@
+
 // Common types used across the application
 
 export interface Transaction {
@@ -24,6 +25,7 @@ export interface DebtItem {
   address?: string;
   phone?: string;
   email?: string;
+  transactionId?: number; // Added missing property
 }
 
 export interface ReceivableItem {
@@ -35,6 +37,7 @@ export interface ReceivableItem {
   address?: string;
   phone?: string;
   email?: string;
+  transactionId?: number; // Added missing property
 }
 
 export interface FinancialHealthItem {
