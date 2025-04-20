@@ -31,7 +31,7 @@ const MonthlyTransactionChart = ({ transactions }: MonthlyTransactionChartProps)
 
   return (
     <ChartContainer 
-      className="h-[400px]"
+      className="h-[300px] mt-8" // Added mt-8 to push the graph lower and reduced height
       config={{
         income: { color: "#00A67E" },
         expense: { color: "#FF4444" },
@@ -59,3 +59,4 @@ const MonthlyTransactionChart = ({ transactions }: MonthlyTransactionChartProps)
 };
 
 export default MonthlyTransactionChart;
+
