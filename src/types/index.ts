@@ -1,4 +1,3 @@
-
 // Common types used across the application
 
 export interface Transaction {
@@ -6,8 +5,9 @@ export interface Transaction {
   date: string;
   description: string;
   amount: number;
-  category: string;
   type: 'income' | 'expense';
+  mainCategory: string;
+  subCategory: string;
 }
 
 export interface DebtItem {
