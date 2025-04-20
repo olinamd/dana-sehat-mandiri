@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { PiggyBank, ChartPie, BarChart, AlertTriangle, Calendar } from "lucide-react";
 
@@ -58,8 +57,8 @@ const Sidebar = () => {
           ))}
         </ul>
       </nav>
-      <div className="absolute bottom-6 left-0 right-0 px-4">
-        <div className="bg-dsm-green-light bg-opacity-10 p-3 rounded-lg">
+      <div className="absolute bottom-6 left-4 right-4">
+        <div className="bg-dsm-green-light bg-opacity-10 p-3 rounded-lg text-left">
           <p className="text-sm text-dsm-green-dark font-medium">
             "Kebebasan finansial adalah hak setiap tenaga kesehatan"
           </p>
