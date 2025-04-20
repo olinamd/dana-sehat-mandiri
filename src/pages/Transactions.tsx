@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransactionForm from "@/components/forms/TransactionForm";
@@ -8,16 +9,36 @@ import MonthlyTransactionChart from "@/components/transactions/MonthlyTransactio
 import { useTransactions } from "@/hooks/useTransactions";
 
 const Transactions = () => {
-  const { 
-    showForm, 
-    setShowForm, 
-    filteredTransactions, 
-    deleteTransaction 
+  // Hanya panggil useTransactions satu kali di sini!
+  const {
+    showForm,
+    setShowForm,
+    filteredTransactions,
+    deleteTransaction,
+    setSortBy,
+    setFilterBy,
+    filterBy,
+    filterValue,
+    setFilterValue,
+    getUniqueDates,
+    getUniqueCategories,
+    getUniqueSubCategories
   } = useTransactions();
 
   return (
     <div className="space-y-6">
-      <TransactionToolbar onNewTransaction={() => setShowForm(true)} />
+      <TransactionToolbar 
+        onNewTransaction={() => setShowForm(true)}
+        // Pastikan TransactionToolbar menggunakan setter yang sama dari parent
+        setSortBy={setSortBy}
+        setFilterBy={setFilterBy}
+        filterBy={filterBy}
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+        getUniqueDates={getUniqueDates}
+        getUniqueCategories={getUniqueCategories}
+        getUniqueSubCategories={getUniqueSubCategories}
+      />
 
       {showForm ? (
         <Card>
@@ -93,3 +114,4 @@ const Transactions = () => {
 };
 
 export default Transactions;
+
