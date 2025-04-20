@@ -32,6 +32,8 @@ const TransactionList = ({ transactions, onDeleteTransaction, showMonthlySummary
           <TableRow>
             <TableHead>Tanggal</TableHead>
             <TableHead>Deskripsi</TableHead>
+            <TableHead>Kategori</TableHead>
+            <TableHead>Sub Kategori</TableHead>
             <TableHead className="text-right">Jumlah</TableHead>
             <TableHead className="text-right">Aksi</TableHead>
           </TableRow>
@@ -41,6 +43,8 @@ const TransactionList = ({ transactions, onDeleteTransaction, showMonthlySummary
             <TableRow key={transaction.id}>
               <TableCell>{formatDate(transaction.date)}</TableCell>
               <TableCell>{transaction.description}</TableCell>
+              <TableCell>{transaction.mainCategory}</TableCell>
+              <TableCell>{transaction.subCategory}</TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
                   {transaction.type === "income" ? (
