@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -59,6 +60,8 @@ const mockDebts: DebtItem[] = [
   {
     id: 1,
     name: "KPR Rumah",
+    category: "long-term",
+    subcategory: "Kredit Pemilikan Rumah",
     total: 800000000,
     remaining: 650000000,
     monthlyPayment: 7500000,
@@ -68,6 +71,8 @@ const mockDebts: DebtItem[] = [
   {
     id: 2,
     name: "Kredit Mobil",
+    category: "long-term",
+    subcategory: "Kredit Pemilikan Mobil",
     total: 300000000,
     remaining: 180000000,
     monthlyPayment: 5300000,
@@ -96,7 +101,7 @@ const mockReceivables: ReceivableItem[] = [
 const DebtManagement = () => {
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [liabilities, setLiabilities] = useState<Liability[]>(mockLiabilities);
-  const [debts] = useState<DebtItem[]>(mockDebts);
+  const [debts, setDebts] = useState<DebtItem[]>(mockDebts);
   const [receivables] = useState<ReceivableItem[]>(mockReceivables);
   const [showAssetForm, setShowAssetForm] = useState(false);
   const [showLiabilityForm, setShowLiabilityForm] = useState(false);
