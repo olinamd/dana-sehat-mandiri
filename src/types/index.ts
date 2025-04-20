@@ -20,6 +20,10 @@ export interface DebtItem {
   monthlyPayment: number;
   dueDate: string;
   interestRate: number;
+  notes?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
 }
 
 export interface ReceivableItem {
@@ -27,7 +31,10 @@ export interface ReceivableItem {
   name: string;
   amount: number;
   dueDate: string;
-  notes: string;
+  notes?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
 }
 
 export interface FinancialHealthItem {

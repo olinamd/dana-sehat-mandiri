@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AssetsList from "@/components/wealth/AssetsList";
@@ -39,48 +38,56 @@ const DebtManagement = () => {
     handleUpdateLiability,
     handleDeleteLiability,
     handleDeleteDebt,
-    // Handler baru untuk Receivable dan Debt
     handleAddReceivable,
     handleAddDebt,
   } = useDebtManagement();
 
-  // Handler override untuk AssetForm
   const onAssetSubmit = (asset) => {
     handleAddAsset(asset);
 
-    // Jika subcategory "Piutang", tambahkan ke Receivable
     if (
       asset.category === "liquid" &&
       asset.subcategory.toLowerCase() === "piutang"
     ) {
       handleAddReceivable({
-        name: asset.name,
+        name: asset.contactName || asset.name,
         amount: asset.amount,
-        dueDate: new Date().toISOString().split("T")[0], // default jatuh tempo = hari ini
-        notes: "Piutang ditambahkan dari aset",
+        dueDate: asset.dueDate || new Date().toISOString().split("T")[0],
+        notes: asset.notes ?? "",
+        address: asset.contactAddress ?? "",
+        phone: asset.contactPhone ?? "",
+        email: asset.contactEmail ?? "",
       });
     }
   };
 
-  // Handler override untuk LiabilityForm
   const onLiabilitySubmit = (liability) => {
     handleAddLiability(liability);
 
-    // Jika subcategory hubungannya hutang, tambahkan juga ke debts
     if (
-      ["Kredit Pemilikan Rumah", "Kredit Pemilikan Mobil", "Pinjaman Teman", "Pinjaman Keluarga", "Pinjaman Usaha", "Pinjaman Lain - Lain", "Kartu Kredit"].includes(
-        liability.subcategory
-      )
+      [
+        "Kredit Pemilikan Rumah",
+        "Kredit Pemilikan Mobil",
+        "Pinjaman Teman",
+        "Pinjaman Keluarga",
+        "Pinjaman Usaha",
+        "Pinjaman Lain - Lain",
+        "Kartu Kredit"
+      ].includes(liability.subcategory)
     ) {
       handleAddDebt({
-        name: liability.name,
+        name: liability.contactName || liability.name,
         category: liability.category,
         subcategory: liability.subcategory,
         total: liability.amount,
         remaining: liability.amount,
         monthlyPayment: 0,
-        dueDate: new Date().toISOString().split("T")[0],
+        dueDate: liability.dueDate || new Date().toISOString().split("T")[0],
         interestRate: 0,
+        notes: liability.notes ?? "",
+        address: liability.contactAddress ?? "",
+        phone: liability.contactPhone ?? "",
+        email: liability.contactEmail ?? "",
       });
     }
   };
@@ -177,4 +184,3 @@ const DebtManagement = () => {
 };
 
 export default DebtManagement;
-
