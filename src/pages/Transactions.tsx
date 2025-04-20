@@ -15,12 +15,14 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import MonthlyCashFlowSummary from "@/components/transactions/MonthlyCashFlowSummary";
 
 export default function Transactions() {
   const {
     showForm,
     setShowForm,
     filteredTransactions,
+    transactions,
     deleteTransaction,
     addTransaction,
     setSortBy,
@@ -151,10 +153,11 @@ export default function Transactions() {
               </Card>
             </TabsContent>
           </Tabs>
+          
+          {/* Add the monthly cash flow summary component */}
+          <MonthlyCashFlowSummary transactions={transactions} />
         </>
       )}
     </div>
   );
 }
-
-// Removed: Ringkasan Bulan Ini, Grafik Arus Kas, and their imports
