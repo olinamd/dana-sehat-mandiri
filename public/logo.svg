@@ -1,0 +1,9 @@
+
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="20" fill="#0056B3"/>
+  <path d="M50 75C63.8071 75 75 63.8071 75 50C75 36.1929 63.8071 25 50 25C36.1929 25 25 36.1929 25 50C25 63.8071 36.1929 75 50 75Z" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M50 35V50" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M65 50H50" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M50 60V65" stroke="#00A67E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40 50H35" stroke="#00A67E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
