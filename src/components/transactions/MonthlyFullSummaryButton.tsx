@@ -5,7 +5,9 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { Transaction } from "@/types";
 import { formatRupiah } from "@/utils/formatters";
-import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import BudgetEditModal from "./BudgetEditModal";
+import BudgetRow from "./BudgetRow";
 
 type Group = "Need" | "Want" | "Save";
 type CategoryMap = Record<
@@ -105,12 +107,6 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
   });
   return Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0]));
 }
-
-const defaultBudgets = {
-  Need: 0,
-  Want: 0,
-  Save: 0,
-};
 
 const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[] }) => {
   const monthsSorted = groupTransactionsByMonth(transactions);
@@ -249,43 +245,26 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
                     <tr>
                       <th className="py-1 px-2 text-left">Keterangan</th>
                       <th className="py-1 px-2 text-right">Budget</th>
-                      <th></th>
                       <th className="py-1 px-2 text-right">Realisasi</th>
                       <th className="py-1 px-2 text-right">Selisih</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {CATEGORY_MAP[group].categories.map((kat) => {
-                      const realisasi = getRealizationFor(kat.main, kat.sub);
-                      const budget = budgets[`${group}|${kat.label}`] || 0;
-                      const selisih = budget - realisasi;
-                      return (
-                        <tr key={kat.label}>
-                          <td className="py-1 px-2">{kat.label}</td>
-                          <td className="py-1 px-2 text-right text-muted-foreground">
-                            {formatRupiah(budget)}
-                          </td>
-                          <td className="py-1 px-1 text-center">
-                            <button 
-                              className="p-1 hover:bg-accent rounded"
-                              onClick={(e) => { e.preventDefault(); handleOpenEditBudget(group, kat.label)}}
-                              aria-label="Edit budget"
-                              type="button"
-                            >
-                              <Pencil size={16} />
-                            </button>
-                          </td>
-                          <td className="py-1 px-2 text-right">{formatRupiah(realisasi)}</td>
-                          <td className={`py-1 px-2 text-right ${selisih < 0 ? "text-destructive" : "text-dsm-green"}`}>
-                            {formatRupiah(selisih)}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {CATEGORY_MAP[group].categories.map((kat) => (
+                      <BudgetRow 
+                        key={kat.label}
+                        group={group}
+                        label={kat.label}
+                        main={kat.main}
+                        sub={kat.sub}
+                        budget={budgets[`${group}|${kat.label}`] || 0}
+                        realisasi={getRealizationFor(kat.main, kat.sub)}
+                        onEdit={handleOpenEditBudget}
+                      />
+                    ))}
                     <tr className={`font-bold ${group === "Save" ? "bg-[#eaf7ef]" : group === "Want" ? "bg-[#fff7e2]" : "bg-[#faeaea]"}`}>
                       <td className="py-1 px-2">SUB-TOTAL</td>
                       <td className="py-1 px-2 text-right text-muted-foreground">{formatRupiah(getGroupBudget(group))}</td>
-                      <td></td>
                       <td className="py-1 px-2 text-right">{formatRupiah(getGroupTotal(CATEGORY_MAP[group].categories))}</td>
                       <td className="py-1 px-2 text-right">
                         {formatRupiah(getGroupBudget(group) - getGroupTotal(CATEGORY_MAP[group].categories))}
@@ -294,7 +273,7 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
                     {group === "Want" && (
                       <>
                         <tr className="font-bold bg-[#f3f3f3]">
-                          <td colSpan={5} className="py-1 px-2 text-right">
+                          <td colSpan={4} className="py-1 px-2 text-right">
                             TOTAL PENGELUARAN: <span className="text-destructive">{formatRupiah(totalNeed + totalWant)}</span>
                           </td>
                         </tr>
@@ -313,33 +292,14 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
             <div />
           </div>
         </div>
-        {editTarget && (
-          <Dialog open={true} onOpenChange={() => setEditTarget(null)}>
-            <DialogContent className="max-w-[320px]">
-              <DialogHeader>
-                <DialogTitle>
-                  Edit Budget: {editTarget.label}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm">
-                  Budget untuk <span className="font-bold">{editTarget.label}</span>
-                </label>
-                <input
-                  type="number"
-                  className="border rounded px-2 py-1"
-                  value={editBudgetValue}
-                  min={0}
-                  onChange={e => setEditBudgetValue(Number(e.target.value))}
-                />
-                <div className="flex flex-row-reverse gap-2 mt-2">
-                  <Button onClick={handleSaveBudget} size="sm">Simpan</Button>
-                  <Button variant="outline" onClick={() => setEditTarget(null)} size="sm">Batal</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+        <BudgetEditModal
+          open={!!editTarget}
+          onClose={() => setEditTarget(null)}
+          label={editTarget?.label || ""}
+          value={editBudgetValue}
+          onChange={setEditBudgetValue}
+          onSave={handleSaveBudget}
+        />
       </DialogContent>
     </Dialog>
   );
