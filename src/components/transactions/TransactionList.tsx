@@ -1,4 +1,5 @@
 
+import React from "react";
 import { formatDate, formatRupiah } from "@/utils/formatters";
 import { ArrowUpRight, ArrowDownLeft, Trash2, ChevronRight, ChevronDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
