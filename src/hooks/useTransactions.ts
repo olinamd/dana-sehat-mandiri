@@ -53,10 +53,31 @@ const mockTransactions: Transaction[] = [
 export const useTransactions = () => {
   const [showForm, setShowForm] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const [sortBy, setSortBy] = useState<'date' | 'category' | 'amount'>('date');
+  const [filterBy, setFilterBy] = useState<'all' | 'date' | 'category' | 'subCategory'>('all');
 
   const filteredTransactions = (type?: 'income' | 'expense') => {
-    if (!type) return transactions;
-    return transactions.filter(t => t.type === type);
+    let filtered = transactions;
+    
+    if (type) {
+      filtered = filtered.filter(t => t.type === type);
+    }
+
+    // Apply sorting
+    filtered = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'date':
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        case 'category':
+          return a.mainCategory.localeCompare(b.mainCategory);
+        case 'amount':
+          return b.amount - a.amount;
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
   };
 
   const deleteTransaction = (id: number) => {
@@ -71,5 +92,7 @@ export const useTransactions = () => {
     setShowForm,
     filteredTransactions,
     deleteTransaction,
+    setSortBy,
+    setFilterBy,
   };
 };

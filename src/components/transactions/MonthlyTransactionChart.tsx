@@ -9,35 +9,29 @@ interface MonthlyTransactionChartProps {
 }
 
 const MonthlyTransactionChart = ({ transactions }: MonthlyTransactionChartProps) => {
-  const totalIncome = transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalExpense = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const data = [
-    { name: 'Pemasukan', amount: totalIncome },
-    { name: 'Pengeluaran', amount: totalExpense },
-  ];
-
-  // Custom tooltip content function
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-2 border border-gray-200 rounded shadow-md">
-          <p className="text-sm font-medium">{payload[0].payload.name}</p>
-          <p className="text-sm text-gray-700">{formatRupiah(payload[0].value)}</p>
-        </div>
-      );
+  // Group transactions by category and subcategory
+  const categoryData = transactions.reduce((acc, t) => {
+    const key = `${t.mainCategory} - ${t.subCategory}`;
+    if (!acc[key]) {
+      acc[key] = {
+        name: key,
+        income: 0,
+        expense: 0,
+      };
     }
-    return null;
-  };
+    if (t.type === 'income') {
+      acc[key].income += t.amount;
+    } else {
+      acc[key].expense += t.amount;
+    }
+    return acc;
+  }, {} as Record<string, { name: string; income: number; expense: number; }>);
+
+  const data = Object.values(categoryData);
 
   return (
     <ChartContainer 
-      className="h-[300px]"
+      className="h-[400px]"
       config={{
         income: { color: "#00A67E" },
         expense: { color: "#FF4444" },
@@ -45,16 +39,19 @@ const MonthlyTransactionChart = ({ transactions }: MonthlyTransactionChartProps)
     >
       <ResponsiveContainer>
         <BarChart data={data}>
-          <XAxis dataKey="name" />
-          <YAxis 
-            tickFormatter={(value) => `${(value / 1000000).toFixed(0)}jt`}
+          <XAxis 
+            dataKey="name" 
+            angle={-45}
+            textAnchor="end"
+            height={100}
+            interval={0}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar 
-            dataKey="amount" 
-            fill="var(--color-income)" 
-            radius={[4, 4, 0, 0]}
+          <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}jt`} />
+          <Tooltip
+            formatter={(value: number) => formatRupiah(value)}
           />
+          <Bar dataKey="income" name="Pemasukan" fill="var(--color-income)" />
+          <Bar dataKey="expense" name="Pengeluaran" fill="var(--color-expense)" />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>
