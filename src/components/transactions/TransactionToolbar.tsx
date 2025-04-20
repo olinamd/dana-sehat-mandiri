@@ -14,24 +14,30 @@ import {
   SelectItem,
   SelectValue
 } from "@/components/ui/select";
-import { useTransactions } from "@/hooks/useTransactions";
 
 interface TransactionToolbarProps {
   onNewTransaction: () => void;
+  setSortBy: (value: 'date' | 'category' | 'amount') => void;
+  setFilterBy: (value: 'all' | 'date' | 'category' | 'subCategory') => void;
+  filterBy: 'all' | 'date' | 'category' | 'subCategory';
+  filterValue: string | null;
+  setFilterValue: (value: string | null) => void;
+  getUniqueDates: () => string[];
+  getUniqueCategories: () => string[];
+  getUniqueSubCategories: () => string[];
 }
 
-const TransactionToolbar = ({ onNewTransaction }: TransactionToolbarProps) => {
-  const {
-    setSortBy,
-    setFilterBy,
-    filterBy,
-    filterValue,
-    setFilterValue,
-    getUniqueDates,
-    getUniqueCategories,
-    getUniqueSubCategories
-  } = useTransactions();
-
+const TransactionToolbar = ({
+  onNewTransaction,
+  setSortBy,
+  setFilterBy,
+  filterBy,
+  filterValue,
+  setFilterValue,
+  getUniqueDates,
+  getUniqueCategories,
+  getUniqueSubCategories
+}: TransactionToolbarProps) => {
   // Tentukan options berdasarkan filterBy
   let filterOptions: string[] = [];
   if (filterBy === "date") {
@@ -140,4 +146,3 @@ const TransactionToolbar = ({ onNewTransaction }: TransactionToolbarProps) => {
 };
 
 export default TransactionToolbar;
-
