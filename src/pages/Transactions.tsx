@@ -4,14 +4,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransactionForm from "@/components/forms/TransactionForm";
 import TransactionList from "@/components/transactions/TransactionList";
 import TransactionToolbar from "@/components/transactions/TransactionToolbar";
-import MonthlyTransactionTable from "@/components/transactions/MonthlyTransactionTable";
-import MonthlyTransactionChart from "@/components/transactions/MonthlyTransactionChart";
-import MonthlyFullSummaryButton from "@/components/transactions/MonthlyFullSummaryButton";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 
-const Transactions = () => {
-  // Semua state di sini saja (ONE source of truth!)
+export default function Transactions() {
   const {
     showForm,
     setShowForm,
@@ -25,26 +30,28 @@ const Transactions = () => {
     setFilterValue,
     getUniqueDates,
     getUniqueCategories,
-    getUniqueSubCategories
+    getUniqueSubCategories,
   } = useTransactions();
-  
-  // Add state for selected month
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
-  // Get all transactions, then we'll filter by month as needed
-  const allTransactions = filteredTransactions();
-  
-  // Helper function to filter transactions by month if a month is selected
-  const getTransactionsByMonth = (type?: 'income' | 'expense') => {
+  // Month selection state
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+
+  // Helper to get transactions for selected month
+  const getTransactionsBySelectedMonth = (type?: "income" | "expense") => {
     const transactions = filteredTransactions(type);
-    if (!selectedMonth) return transactions;
-    
-    return transactions.filter(t => t.date.startsWith(selectedMonth));
+    if (!selectedDate) return transactions;
+    const ym = format(selectedDate, "yyyy-MM");
+    return transactions.filter((t) => t.date.startsWith(ym));
   };
+
+  // Render month as "MMMM yyyy" in Indonesian
+  const monthLabel =
+    selectedDate &&
+    format(selectedDate, "MMMM yyyy", { locale: undefined /* id if installed */ });
 
   return (
     <div className="space-y-6">
-      <TransactionToolbar 
+      <TransactionToolbar
         onNewTransaction={() => setShowForm(true)}
         setSortBy={setSortBy}
         setFilterBy={setFilterBy}
@@ -56,17 +63,50 @@ const Transactions = () => {
         getUniqueSubCategories={getUniqueSubCategories}
       />
 
-      <div className="flex flex-wrap gap-4 items-center mb-2">
-        <MonthlyFullSummaryButton 
-          transactions={allTransactions} 
-          onMonthChange={(month) => setSelectedMonth(month)} 
-        />
+      <div className="flex items-center gap-2 mb-2">
+        <span className="font-medium">Bulan Penginputan:</span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-[175px] pl-3 text-left font-normal"
+            >
+              {selectedDate ? (
+                <span>
+                  <CalendarIcon className="h-4 w-4 mr-2 inline" />
+                  {format(selectedDate, "MMMM yyyy", { locale: undefined /* id if installed */ })}
+                </span>
+              ) : (
+                <span>
+                  <CalendarIcon className="h-4 w-4 mr-2 inline" />
+                  Pilih Bulan
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate || undefined}
+              onSelect={(date) => date && setSelectedDate(date)}
+              initialFocus
+              className="p-3 pointer-events-auto"
+              // Enable only to pick the month
+              captionLayout="dropdown-buttons"
+              fromYear={2022}
+              toYear={2050}
+              // Render only month and year pickers, days not needed
+              showOutsideDays={false}
+              // Style for month-only picker: may require custom
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {showForm ? (
         <Card>
           <CardHeader>
-            <CardTitle>Tambah Arus Kas Baru</CardTitle> {/* Ganti label */}
+            <CardTitle>Tambah Arus Kas Baru</CardTitle>
           </CardHeader>
           <CardContent>
             <TransactionForm onClose={() => setShowForm(false)} addTransaction={addTransaction} />
@@ -83,8 +123,8 @@ const Transactions = () => {
             <TabsContent value="all">
               <Card>
                 <CardContent className="p-0">
-                  <TransactionList 
-                    transactions={getTransactionsByMonth()} 
+                  <TransactionList
+                    transactions={getTransactionsBySelectedMonth()}
                     onDeleteTransaction={deleteTransaction}
                   />
                 </CardContent>
@@ -93,8 +133,8 @@ const Transactions = () => {
             <TabsContent value="income">
               <Card>
                 <CardContent className="p-0">
-                  <TransactionList 
-                    transactions={getTransactionsByMonth('income')} 
+                  <TransactionList
+                    transactions={getTransactionsBySelectedMonth("income")}
                     onDeleteTransaction={deleteTransaction}
                   />
                 </CardContent>
@@ -103,41 +143,18 @@ const Transactions = () => {
             <TabsContent value="expense">
               <Card>
                 <CardContent className="p-0">
-                  <TransactionList 
-                    transactions={getTransactionsByMonth('expense')} 
+                  <TransactionList
+                    transactions={getTransactionsBySelectedMonth("expense")}
                     onDeleteTransaction={deleteTransaction}
                   />
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Ringkasan Bulan Ini</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <MonthlyTransactionTable 
-                  transactions={getTransactionsByMonth()} 
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Grafik Arus Kas</CardTitle> {/* Ganti label */}
-              </CardHeader>
-              <CardContent>
-                <MonthlyTransactionChart 
-                  transactions={getTransactionsByMonth()} 
-                />
-              </CardContent>
-            </Card>
-          </div>
         </>
       )}
     </div>
   );
-};
+}
 
-export default Transactions;
+// Removed: Ringkasan Bulan Ini, Grafik Arus Kas, and their imports
