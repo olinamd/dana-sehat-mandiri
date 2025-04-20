@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { PiggyBank, ChartPie, BarChart, AlertTriangle, Calendar } from "lucide-react";
 
@@ -13,12 +14,12 @@ const Sidebar = () => {
     },
     { 
       path: "/transactions", 
-      label: "Transaksi", 
+      label: "Arus Kas",  // Ganti label Transaksi -> Arus Kas
       icon: <BarChart className="h-5 w-5" /> 
     },
     { 
       path: "/debt-management", 
-      label: "Hutang & Piutang", 
+      label: "Neraca Keuangan",  // Ganti Hutang & Piutang -> Neraca Keuangan
       icon: <PiggyBank className="h-5 w-5" /> 
     },
     { 
@@ -69,3 +70,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

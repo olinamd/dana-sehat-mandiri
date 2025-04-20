@@ -14,7 +14,7 @@ interface TransactionListProps {
 const TransactionList = ({ transactions, onDeleteTransaction }: TransactionListProps) => {
   const handleDelete = (id: number) => {
     onDeleteTransaction(id);
-    toast.success("Transaksi berhasil dihapus");
+    toast.success("Arus Kas berhasil dihapus"); // Ganti label Transaksi -> Arus Kas
   };
 
   return (

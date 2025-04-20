@@ -18,12 +18,12 @@ const MobileHeader = () => {
     },
     { 
       path: "/transactions", 
-      label: "Transaksi", 
+      label: "Arus Kas", // Ganti Transaksi -> Arus Kas
       icon: <BarChart className="h-5 w-5" /> 
     },
     { 
       path: "/debt-management", 
-      label: "Hutang & Piutang", 
+      label: "Neraca Keuangan", // Ganti Hutang & Piutang -> Neraca Keuangan
       icon: <PiggyBank className="h-5 w-5" /> 
     },
     { 

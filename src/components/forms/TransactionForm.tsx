@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,7 +54,7 @@ const TransactionForm = ({ onClose, addTransaction }: TransactionFormProps) => {
     const subCategoryName = subCategoryObj ? subCategoryObj.name : '';
     
     const newTransaction = {
-      id: Date.now(), // Using timestamp as a simple ID
+      id: Date.now(),
       date: formattedDate,
       description,
       amount: parseFloat(amount),
@@ -63,14 +64,14 @@ const TransactionForm = ({ onClose, addTransaction }: TransactionFormProps) => {
     };
     
     addTransaction(newTransaction);
-    toast.success("Transaksi berhasil disimpan");
+    toast.success("Arus Kas berhasil disimpan"); // Ubah Transaksi berhasil disimpan
     onClose();
   };
   
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="transaction-type">Jenis Transaksi</Label>
+        <Label htmlFor="transaction-type">Jenis Arus Kas</Label> {/* Ganti label */}
         <RadioGroup 
           id="transaction-type" 
           defaultValue="expense" 
@@ -117,7 +118,7 @@ const TransactionForm = ({ onClose, addTransaction }: TransactionFormProps) => {
         <Label htmlFor="description">Deskripsi</Label>
         <Input 
           id="description" 
-          placeholder="Masukkan deskripsi transaksi" 
+          placeholder="Masukkan deskripsi arus kas" // Ubah placeholder
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

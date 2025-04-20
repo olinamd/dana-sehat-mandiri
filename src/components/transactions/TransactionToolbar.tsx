@@ -50,7 +50,7 @@ const TransactionToolbar = ({
 
   return (
     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-0">
-      <h1 className="text-2xl font-bold text-gray-900 hidden md:block">Transaksi</h1>
+      <h1 className="text-2xl font-bold text-gray-900 hidden md:block">Arus Kas</h1> {/* Ganti label Transaksi */}
       <div className="flex gap-2 flex-wrap">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -138,7 +138,7 @@ const TransactionToolbar = ({
         </Button>
         <Button size="sm" onClick={onNewTransaction}>
           <PlusCircle className="h-4 w-4 mr-2" />
-          Transaksi Baru
+          Arus Kas Baru {/* Ganti Transaksi Baru */}
         </Button>
       </div>
     </div>
@@ -146,3 +146,4 @@ const TransactionToolbar = ({
 };
 
 export default TransactionToolbar;
+

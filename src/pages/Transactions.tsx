@@ -15,7 +15,7 @@ const Transactions = () => {
     setShowForm,
     filteredTransactions,
     deleteTransaction,
-    addTransaction,      // <-- tambahkan ini
+    addTransaction,
     setSortBy,
     setFilterBy,
     filterBy,
@@ -43,10 +43,9 @@ const Transactions = () => {
       {showForm ? (
         <Card>
           <CardHeader>
-            <CardTitle>Tambah Transaksi Baru</CardTitle>
+            <CardTitle>Tambah Arus Kas Baru</CardTitle> {/* Ganti label */}
           </CardHeader>
           <CardContent>
-            {/* Berikan addTransaction ke form */}
             <TransactionForm onClose={() => setShowForm(false)} addTransaction={addTransaction} />
           </CardContent>
         </Card>
@@ -101,7 +100,7 @@ const Transactions = () => {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Grafik Transaksi</CardTitle>
+                <CardTitle>Grafik Arus Kas</CardTitle> {/* Ganti label */}
               </CardHeader>
               <CardContent>
                 <MonthlyTransactionChart transactions={filteredTransactions()} />
