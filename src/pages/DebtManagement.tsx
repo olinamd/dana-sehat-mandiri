@@ -1,9 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
 import { PlusCircle, ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { Asset, Liability } from "@/types/assets";
@@ -12,6 +10,8 @@ import { formatRupiah, formatDate } from "@/utils/formatters";
 import { toast } from "sonner";
 import AssetsList from "@/components/wealth/AssetsList";
 import LiabilitiesList from "@/components/wealth/LiabilitiesList";
+import AssetForm from "@/components/wealth/AssetForm";
+import LiabilityForm from "@/components/wealth/LiabilityForm";
 
 const mockAssets: Asset[] = [
   {
@@ -54,7 +54,6 @@ const mockLiabilities: Liability[] = [
   },
 ];
 
-// Mock data for debts
 const mockDebts: DebtItem[] = [
   {
     id: 1,
@@ -76,7 +75,6 @@ const mockDebts: DebtItem[] = [
   }
 ];
 
-// Mock data for receivables
 const mockReceivables: ReceivableItem[] = [
   {
     id: 1,
@@ -99,13 +97,33 @@ const DebtManagement = () => {
   const [liabilities, setLiabilities] = useState<Liability[]>(mockLiabilities);
   const [debts] = useState<DebtItem[]>(mockDebts);
   const [receivables] = useState<ReceivableItem[]>(mockReceivables);
+  const [showAssetForm, setShowAssetForm] = useState(false);
+  const [showLiabilityForm, setShowLiabilityForm] = useState(false);
+  const [editingAsset, setEditingAsset] = useState<Asset | undefined>();
+  const [editingLiability, setEditingLiability] = useState<Liability | undefined>();
 
   const totalAssets = assets.reduce((sum, asset) => sum + asset.amount, 0);
   const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount, 0);
   const netWorth = totalAssets - totalLiabilities;
 
+  const handleAddAsset = (newAsset: Omit<Asset, "id">) => {
+    setAssets(prev => [...prev, { ...newAsset, id: prev.length + 1 }]);
+    toast.success("Aset berhasil ditambahkan");
+  };
+
   const handleEditAsset = (asset: Asset) => {
-    console.log("Edit asset:", asset);
+    setEditingAsset(asset);
+    setShowAssetForm(true);
+  };
+
+  const handleUpdateAsset = (updatedAsset: Omit<Asset, "id">) => {
+    setAssets(prev => prev.map(asset => 
+      asset.id === editingAsset?.id 
+        ? { ...updatedAsset, id: asset.id }
+        : asset
+    ));
+    setEditingAsset(undefined);
+    toast.success("Aset berhasil diperbarui");
   };
 
   const handleDeleteAsset = (id: number) => {
@@ -113,8 +131,24 @@ const DebtManagement = () => {
     toast.success("Aset berhasil dihapus");
   };
 
+  const handleAddLiability = (newLiability: Omit<Liability, "id">) => {
+    setLiabilities(prev => [...prev, { ...newLiability, id: prev.length + 1 }]);
+    toast.success("Liabilitas berhasil ditambahkan");
+  };
+
   const handleEditLiability = (liability: Liability) => {
-    console.log("Edit liability:", liability);
+    setEditingLiability(liability);
+    setShowLiabilityForm(true);
+  };
+
+  const handleUpdateLiability = (updatedLiability: Omit<Liability, "id">) => {
+    setLiabilities(prev => prev.map(liability => 
+      liability.id === editingLiability?.id 
+        ? { ...updatedLiability, id: liability.id }
+        : liability
+    ));
+    setEditingLiability(undefined);
+    toast.success("Liabilitas berhasil diperbarui");
   };
 
   const handleDeleteLiability = (id: number) => {
@@ -127,7 +161,7 @@ const DebtManagement = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900 hidden md:block">Hutang & Piutang</h1>
         <div className="flex gap-2">
-          <Button size="sm">
+          <Button size="sm" onClick={() => setShowAssetForm(true)}>
             <PlusCircle className="h-4 w-4 mr-2" />
             Tambah Baru
           </Button>
@@ -270,6 +304,26 @@ const DebtManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <AssetForm
+        isOpen={showAssetForm}
+        onClose={() => {
+          setShowAssetForm(false);
+          setEditingAsset(undefined);
+        }}
+        onSubmit={editingAsset ? handleUpdateAsset : handleAddAsset}
+        editingAsset={editingAsset}
+      />
+
+      <LiabilityForm
+        isOpen={showLiabilityForm}
+        onClose={() => {
+          setShowLiabilityForm(false);
+          setEditingLiability(undefined);
+        }}
+        onSubmit={editingLiability ? handleUpdateLiability : handleAddLiability}
+        editingLiability={editingLiability}
+      />
     </div>
   );
 };
