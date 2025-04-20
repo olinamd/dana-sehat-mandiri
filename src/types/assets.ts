@@ -1,4 +1,3 @@
-
 export type AssetCategory = 'liquid' | 'investment' | 'personal';
 export type LiabilityCategory = 'short-term' | 'long-term';
 
@@ -17,6 +16,8 @@ export interface Liability {
   amount: number;
   category: LiabilityCategory;
   subcategory: string;
+  dueDate?: string; // Added missing property
+  monthlyPayment?: number; // Added missing property
   transactionId?: number; // To link with transaction history
 }
 
