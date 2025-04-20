@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,6 @@ type CategoryMap = Record<
   }
 >;
 
-// Mapping kategori dan subkategori sesuai dokumen referensi
 const CATEGORY_MAP: CategoryMap = {
   Need: {
     label: "NEED",
@@ -86,7 +84,6 @@ const CATEGORY_MAP: CategoryMap = {
   }
 };
 
-// Kategori untuk arus kas masuk
 const INCOME_CATEGORIES = [
   { main: "Pendapatan", sub: "Gaji Kerja Suami", label: "Gaji Kerja Suami" },
   { main: "Pendapatan", sub: "Gaji Kerja Istri", label: "Gaji Kerja Istri" },
@@ -106,7 +103,6 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
     if (!monthMap[monthKey]) monthMap[monthKey] = [];
     monthMap[monthKey].push(t);
   });
-  // Urutkan bulan terbaru ke atas
   return Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0]));
 }
 
@@ -121,7 +117,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
   const [open, setOpen] = useState(false);
   const [monthIndex, setMonthIndex] = useState(0);
 
-  // PERUBAHAN: State budgets sekarang mapping unik (key: group+subLabel), misal: "Need|Mobil & Motor Kredit"
   const initialBudgets: Record<string, number> = {};
   (["Need", "Want", "Save"] as Group[]).forEach(group => {
     CATEGORY_MAP[group].categories.forEach(cat => {
@@ -131,7 +126,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
 
   const [budgets, setBudgets] = useState<Record<string, number>>(initialBudgets);
 
-  // Modal edit budget per kategori
   const [editTarget, setEditTarget] = useState<{group: Group; label: string} | null>(null);
   const [editBudgetValue, setEditBudgetValue] = useState<number>(0);
 
@@ -153,7 +147,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
       .reduce((sum, t) => sum + t.amount, 0);
   }
 
-  // Ubah: SUM per group jadi pakai budgets dari key mapping tadi
   function getGroupTotal(categories: {main: string; sub: string; label: string}[]) {
     return categories.reduce((sum, k) => sum + getRealizationFor(k.main, k.sub), 0);
   }
@@ -174,7 +167,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
   const totalIncome = INCOME_CATEGORIES.reduce((sum, item) => sum + getIncomeFor(item.sub), 0);
   const sisaAkhirBulan = totalIncome - totalOut;
 
-  // LOGIC untuk buka modal edit budget per subkategori
   const handleOpenEditBudget = (group: Group, label: string) => {
     setEditTarget({ group, label });
     setEditBudgetValue(budgets[`${group}|${label}`] || 0);
@@ -217,7 +209,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
           </Button>
         </div>
         <div className="overflow-auto max-h-[70vh] pb-2">
-          {/* PENDAPATAN */}
           <div className="mb-4">
             <div className="font-bold text-dsm-green mb-1">ARUS KAS MASUK</div>
             <table className="w-full text-xs border mb-3">
@@ -241,9 +232,8 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
               </tbody>
             </table>
           </div>
-          {/* ARUS KAS KELUAR */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {(["Need", "Want", "Save"] as Group[]).map((group) => (
+            {(["Need", "Want", "Save"] as Group[]).map((group, idx) => (
               <div key={group} className="mb-3 border rounded relative pb-8">
                 <div className={
                   group === "Need" 
@@ -253,7 +243,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
                       : "bg-[#56B870] text-white font-bold py-1 px-2 flex justify-between items-center"
                 }>
                   <span>{CATEGORY_MAP[group].label}</span>
-                  {/* sebelumnya: tombol edit budget seluruh grup, sekarang: tidak perlu */}
                 </div>
                 <table className="w-full text-xs">
                   <thead>
@@ -273,12 +262,15 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
                       return (
                         <tr key={kat.label}>
                           <td className="py-1 px-2">{kat.label}</td>
-                          <td className="py-1 px-2 text-right text-muted-foreground">{formatRupiah(budget)}</td>
+                          <td className="py-1 px-2 text-right text-muted-foreground">
+                            {formatRupiah(budget)}
+                          </td>
                           <td className="py-1 px-1 text-center">
                             <button 
                               className="p-1 hover:bg-accent rounded"
-                              onClick={() => handleOpenEditBudget(group, kat.label)}
+                              onClick={(e) => { e.preventDefault(); handleOpenEditBudget(group, kat.label)}}
                               aria-label="Edit budget"
+                              type="button"
                             >
                               <Pencil size={16} />
                             </button>
@@ -300,18 +292,19 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
                       </td>
                     </tr>
                     {group === "Want" && (
-                      <tr className="font-bold bg-[#f3f3f3]">
-                        <td colSpan={5} className="py-1 px-2 text-right">
-                          TOTAL PENGELUARAN: <span className="text-destructive">{formatRupiah(totalOut)}</span>
-                        </td>
-                      </tr>
+                      <>
+                        <tr className="font-bold bg-[#f3f3f3]">
+                          <td colSpan={5} className="py-1 px-2 text-right">
+                            TOTAL PENGELUARAN: <span className="text-destructive">{formatRupiah(totalNeed + totalWant)}</span>
+                          </td>
+                        </tr>
+                      </>
                     )}
                   </tbody>
                 </table>
               </div>
             ))}
           </div>
-          {/* SISA AKHIR BULAN */}
           <div className="mt-2 grid grid-cols-3 gap-2 font-bold">
             <div className="col-span-2 flex items-center justify-end space-x-4">
               <span className="text-gray-700">Sisa Akhir Bulan:</span>
@@ -320,7 +313,6 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
             <div />
           </div>
         </div>
-        {/* Dialog Edit Budget Per Item */}
         {editTarget && (
           <Dialog open={true} onOpenChange={() => setEditTarget(null)}>
             <DialogContent className="max-w-[320px]">
