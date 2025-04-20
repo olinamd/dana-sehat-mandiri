@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -108,7 +108,12 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
   return Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0]));
 }
 
-const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[] }) => {
+interface MonthlyFullSummaryButtonProps {
+  transactions: Transaction[];
+  onMonthChange?: (month: string | null) => void;
+}
+
+const MonthlyFullSummaryButton = ({ transactions, onMonthChange }: MonthlyFullSummaryButtonProps) => {
   const monthsSorted = groupTransactionsByMonth(transactions);
   const [open, setOpen] = useState(false);
   const [monthIndex, setMonthIndex] = useState(0);
@@ -121,13 +126,24 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
   });
 
   const [budgets, setBudgets] = useState<Record<string, number>>(initialBudgets);
-
   const [editTarget, setEditTarget] = useState<{group: Group; label: string} | null>(null);
   const [editBudgetValue, setEditBudgetValue] = useState<number>(0);
 
   const monthKeys = monthsSorted.map(([month]) => month);
   const currentMonth = monthsSorted[monthIndex]?.[0] || "";
   const currentMonthTransactions = monthsSorted[monthIndex]?.[1] || [];
+
+  useEffect(() => {
+    if (onMonthChange) {
+      onMonthChange(currentMonth || null);
+    }
+  }, [currentMonth, onMonthChange]);
+
+  useEffect(() => {
+    if (!open && onMonthChange) {
+      onMonthChange(null);
+    }
+  }, [open, onMonthChange]);
 
   function getRealizationFor(mainCategory: string, subCategory: string) {
     return currentMonthTransactions
@@ -146,6 +162,7 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
   function getGroupTotal(categories: {main: string; sub: string; label: string}[]) {
     return categories.reduce((sum, k) => sum + getRealizationFor(k.main, k.sub), 0);
   }
+  
   function getGroupBudget(group: Group) {
     return CATEGORY_MAP[group].categories.reduce(
       (tot, cat) => tot + (budgets[`${group}|${cat.label}`] || 0),
@@ -167,10 +184,19 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
     setEditTarget({ group, label });
     setEditBudgetValue(budgets[`${group}|${label}`] || 0);
   };
+  
   const handleSaveBudget = () => {
     if (editTarget) {
       setBudgets({ ...budgets, [`${editTarget.group}|${editTarget.label}`]: editBudgetValue });
       setEditTarget(null);
+    }
+  };
+
+  const handleMonthChange = (newIndex: number) => {
+    setMonthIndex(newIndex);
+    if (onMonthChange) {
+      const newMonth = monthsSorted[newIndex]?.[0] || null;
+      onMonthChange(newMonth);
     }
   };
 
@@ -190,7 +216,7 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
         <div className="flex items-center justify-between mb-2">
           <Button 
             variant="secondary" size="sm" 
-            onClick={() => setMonthIndex(i => Math.max(i-1, 0))}
+            onClick={() => handleMonthChange(Math.max(monthIndex-1, 0))}
             disabled={monthIndex <= 0}
           >
             <ChevronLeft className="w-4 h-4" /> Bulan Sebelumnya
@@ -198,7 +224,7 @@ const MonthlyFullSummaryButton = ({ transactions }: { transactions: Transaction[
           <span className="font-bold text-lg">{currentMonth ? format(new Date(currentMonth + "-01"), "MMMM yyyy", { locale: id }) : ""}</span>
           <Button 
             variant="secondary" size="sm" 
-            onClick={() => setMonthIndex(i => Math.min(i+1, monthsSorted.length-1))}
+            onClick={() => handleMonthChange(Math.min(monthIndex+1, monthsSorted.length-1))}
             disabled={monthIndex >= monthsSorted.length-1}
           >
             Bulan Berikutnya <ChevronRight className="w-4 h-4" />

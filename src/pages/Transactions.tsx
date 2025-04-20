@@ -8,6 +8,7 @@ import MonthlyTransactionTable from "@/components/transactions/MonthlyTransactio
 import MonthlyTransactionChart from "@/components/transactions/MonthlyTransactionChart";
 import MonthlyFullSummaryButton from "@/components/transactions/MonthlyFullSummaryButton";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useState } from "react";
 
 const Transactions = () => {
   // Semua state di sini saja (ONE source of truth!)
@@ -26,6 +27,20 @@ const Transactions = () => {
     getUniqueCategories,
     getUniqueSubCategories
   } = useTransactions();
+  
+  // Add state for selected month
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+
+  // Get all transactions, then we'll filter by month as needed
+  const allTransactions = filteredTransactions();
+  
+  // Helper function to filter transactions by month if a month is selected
+  const getTransactionsByMonth = (type?: 'income' | 'expense') => {
+    const transactions = filteredTransactions(type);
+    if (!selectedMonth) return transactions;
+    
+    return transactions.filter(t => t.date.startsWith(selectedMonth));
+  };
 
   return (
     <div className="space-y-6">
@@ -42,7 +57,10 @@ const Transactions = () => {
       />
 
       <div className="flex flex-wrap gap-4 items-center mb-2">
-        <MonthlyFullSummaryButton transactions={filteredTransactions()} />
+        <MonthlyFullSummaryButton 
+          transactions={allTransactions} 
+          onMonthChange={(month) => setSelectedMonth(month)} 
+        />
       </div>
 
       {showForm ? (
@@ -66,7 +84,7 @@ const Transactions = () => {
               <Card>
                 <CardContent className="p-0">
                   <TransactionList 
-                    transactions={filteredTransactions()} 
+                    transactions={getTransactionsByMonth()} 
                     onDeleteTransaction={deleteTransaction}
                   />
                 </CardContent>
@@ -76,7 +94,7 @@ const Transactions = () => {
               <Card>
                 <CardContent className="p-0">
                   <TransactionList 
-                    transactions={filteredTransactions('income')} 
+                    transactions={getTransactionsByMonth('income')} 
                     onDeleteTransaction={deleteTransaction}
                   />
                 </CardContent>
@@ -86,7 +104,7 @@ const Transactions = () => {
               <Card>
                 <CardContent className="p-0">
                   <TransactionList 
-                    transactions={filteredTransactions('expense')} 
+                    transactions={getTransactionsByMonth('expense')} 
                     onDeleteTransaction={deleteTransaction}
                   />
                 </CardContent>
@@ -100,7 +118,9 @@ const Transactions = () => {
                 <CardTitle>Ringkasan Bulan Ini</CardTitle>
               </CardHeader>
               <CardContent>
-                <MonthlyTransactionTable transactions={filteredTransactions()} />
+                <MonthlyTransactionTable 
+                  transactions={getTransactionsByMonth()} 
+                />
               </CardContent>
             </Card>
             <Card>
@@ -108,7 +128,9 @@ const Transactions = () => {
                 <CardTitle>Grafik Arus Kas</CardTitle> {/* Ganti label */}
               </CardHeader>
               <CardContent>
-                <MonthlyTransactionChart transactions={filteredTransactions()} />
+                <MonthlyTransactionChart 
+                  transactions={getTransactionsByMonth()} 
+                />
               </CardContent>
             </Card>
           </div>
