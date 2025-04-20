@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,14 +11,21 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { cashFlowCategories } from "@/utils/transactionCategories";
 import { toast } from "sonner";
-import { useTransactions } from "@/hooks/useTransactions";
 
 interface TransactionFormProps {
   onClose: () => void;
+  addTransaction: (transaction: {
+    id: number;
+    date: string;
+    description: string;
+    amount: number;
+    type: 'income' | 'expense';
+    mainCategory: string;
+    subCategory: string;
+  }) => void;
 }
 
-const TransactionForm = ({ onClose }: TransactionFormProps) => {
-  const { addTransaction } = useTransactions();
+const TransactionForm = ({ onClose, addTransaction }: TransactionFormProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [description, setDescription] = useState<string>('');

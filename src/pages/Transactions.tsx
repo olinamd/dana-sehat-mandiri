@@ -9,12 +9,13 @@ import MonthlyTransactionChart from "@/components/transactions/MonthlyTransactio
 import { useTransactions } from "@/hooks/useTransactions";
 
 const Transactions = () => {
-  // Hanya panggil useTransactions satu kali di sini!
+  // Semua state di sini saja (ONE source of truth!)
   const {
     showForm,
     setShowForm,
     filteredTransactions,
     deleteTransaction,
+    addTransaction,      // <-- tambahkan ini
     setSortBy,
     setFilterBy,
     filterBy,
@@ -29,7 +30,6 @@ const Transactions = () => {
     <div className="space-y-6">
       <TransactionToolbar 
         onNewTransaction={() => setShowForm(true)}
-        // Pastikan TransactionToolbar menggunakan setter yang sama dari parent
         setSortBy={setSortBy}
         setFilterBy={setFilterBy}
         filterBy={filterBy}
@@ -46,7 +46,8 @@ const Transactions = () => {
             <CardTitle>Tambah Transaksi Baru</CardTitle>
           </CardHeader>
           <CardContent>
-            <TransactionForm onClose={() => setShowForm(false)} />
+            {/* Berikan addTransaction ke form */}
+            <TransactionForm onClose={() => setShowForm(false)} addTransaction={addTransaction} />
           </CardContent>
         </Card>
       ) : (
@@ -114,4 +115,3 @@ const Transactions = () => {
 };
 
 export default Transactions;
-
