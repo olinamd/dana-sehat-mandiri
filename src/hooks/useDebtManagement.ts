@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Asset, Liability } from "@/types/assets";
 import { DebtItem, ReceivableItem } from "@/types";
@@ -89,6 +90,8 @@ export const useDebtManagement = () => {
     editingLiability,
     setShowAssetForm,
     setShowLiabilityForm,
+    setEditingAsset,
+    setEditingLiability,
     handleAddAsset,
     handleEditAsset,
     handleUpdateAsset,

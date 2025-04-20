@@ -26,6 +26,8 @@ const DebtManagement = () => {
     editingLiability,
     setShowAssetForm,
     setShowLiabilityForm,
+    setEditingAsset,
+    setEditingLiability,
     handleAddAsset,
     handleEditAsset,
     handleUpdateAsset,
