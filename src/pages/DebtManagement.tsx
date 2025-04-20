@@ -157,6 +157,11 @@ const DebtManagement = () => {
     toast.success("Liabilitas berhasil dihapus");
   };
 
+  const handleDeleteDebt = (id: number) => {
+    setDebts(prev => prev.filter(debt => debt.id !== id));
+    toast.success("Hutang berhasil dihapus");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -210,7 +215,7 @@ const DebtManagement = () => {
         <TabsContent value="debts">
           <Card>
             <CardContent className="p-0">
-              <DebtsTable debts={debts} />
+              <DebtsTable debts={debts} onDelete={handleDeleteDebt} />
             </CardContent>
           </Card>
         </TabsContent>

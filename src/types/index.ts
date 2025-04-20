@@ -13,6 +13,8 @@ export interface Transaction {
 export interface DebtItem {
   id: number;
   name: string;
+  category: 'short-term' | 'long-term';
+  subcategory: string;
   total: number;
   remaining: number;
   monthlyPayment: number;
