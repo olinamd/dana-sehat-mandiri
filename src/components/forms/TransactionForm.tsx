@@ -11,18 +11,58 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { cashFlowCategories } from "@/utils/transactionCategories";
+import { toast } from "sonner";
+import { useTransactions } from "@/hooks/useTransactions";
 
 interface TransactionFormProps {
   onClose: () => void;
 }
 
 const TransactionForm = ({ onClose }: TransactionFormProps) => {
+  const { addTransaction } = useTransactions();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [type, setType] = useState<'expense' | 'income'>('expense');
+  const [description, setDescription] = useState<string>('');
+  const [amount, setAmount] = useState<string>('');
   const [mainCategory, setMainCategory] = useState<string>('');
+  const [subCategory, setSubCategory] = useState<string>('');
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!date || !description || !amount || !mainCategory || !subCategory) {
+      toast.error("Semua field harus diisi");
+      return;
+    }
+    
+    // Format the date as YYYY-MM-DD
+    const formattedDate = date ? format(date, "yyyy-MM-dd") : '';
+    
+    // Find the category name from the ID
+    const categoryObj = cashFlowCategories[type].find(cat => cat.id === mainCategory);
+    const mainCategoryName = categoryObj ? categoryObj.name : '';
+    
+    // Find the subcategory name from the ID
+    const subCategoryObj = categoryObj?.subcategories.find(sub => sub.id === subCategory);
+    const subCategoryName = subCategoryObj ? subCategoryObj.name : '';
+    
+    const newTransaction = {
+      id: Date.now(), // Using timestamp as a simple ID
+      date: formattedDate,
+      description,
+      amount: parseFloat(amount),
+      type,
+      mainCategory: mainCategoryName,
+      subCategory: subCategoryName,
+    };
+    
+    addTransaction(newTransaction);
+    toast.success("Transaksi berhasil disimpan");
+    onClose();
+  };
   
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="space-y-2">
         <Label htmlFor="transaction-type">Jenis Transaksi</Label>
         <RadioGroup 
@@ -50,6 +90,7 @@ const TransactionForm = ({ onClose }: TransactionFormProps) => {
               variant="outline"
               className="w-full justify-start text-left font-normal"
               id="date"
+              type="button"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {date ? format(date, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
@@ -68,17 +109,34 @@ const TransactionForm = ({ onClose }: TransactionFormProps) => {
 
       <div className="space-y-2">
         <Label htmlFor="description">Deskripsi</Label>
-        <Input id="description" placeholder="Masukkan deskripsi transaksi" />
+        <Input 
+          id="description" 
+          placeholder="Masukkan deskripsi transaksi" 
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="amount">Jumlah (Rp)</Label>
-        <Input id="amount" type="number" placeholder="0" />
+        <Input 
+          id="amount" 
+          type="number" 
+          placeholder="0" 
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="main-category">Kategori Utama</Label>
-        <Select onValueChange={setMainCategory}>
+        <Select 
+          value={mainCategory} 
+          onValueChange={(value) => {
+            setMainCategory(value);
+            setSubCategory(''); // Reset subcategory when main category changes
+          }}
+        >
           <SelectTrigger id="main-category">
             <SelectValue placeholder="Pilih kategori utama" />
           </SelectTrigger>
@@ -95,7 +153,7 @@ const TransactionForm = ({ onClose }: TransactionFormProps) => {
       {mainCategory && (
         <div className="space-y-2">
           <Label htmlFor="sub-category">Sub Kategori</Label>
-          <Select>
+          <Select value={subCategory} onValueChange={setSubCategory}>
             <SelectTrigger id="sub-category">
               <SelectValue placeholder="Pilih sub kategori" />
             </SelectTrigger>
@@ -113,7 +171,7 @@ const TransactionForm = ({ onClose }: TransactionFormProps) => {
       )}
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" onClick={onClose} type="button">
           Batal
         </Button>
         <Button type="submit">

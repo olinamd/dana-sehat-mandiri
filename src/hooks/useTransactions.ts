@@ -111,12 +111,17 @@ export const useTransactions = () => {
     );
   };
 
+  const addTransaction = (transaction: Transaction) => {
+    setTransactions(prevTransactions => [transaction, ...prevTransactions]);
+  };
+
   return {
     transactions,
     showForm,
     setShowForm,
     filteredTransactions,
     deleteTransaction,
+    addTransaction,
     setSortBy,
     setFilterBy,
     filterBy,
