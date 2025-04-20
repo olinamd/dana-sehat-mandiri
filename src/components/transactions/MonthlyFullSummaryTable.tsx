@@ -4,27 +4,26 @@ import { id } from "date-fns/locale";
 import { formatRupiah } from "@/utils/formatters";
 import BudgetRow from "./BudgetRow";
 
+// Types used
 type Group = "Need" | "Want" | "Save";
 
+// Props for table, consistent with summary requirements
 interface Category {
   main: string;
   sub: string;
   label: string;
 }
-
 interface CategoryMapType {
   [key: string]: {
     label: string;
     categories: Category[];
   };
 }
-
 interface IncomeCategory {
   main: string;
   sub: string;
   label: string;
 }
-
 interface MonthlyFullSummaryTableProps {
   CATEGORY_MAP: CategoryMapType;
   INCOME_CATEGORIES: IncomeCategory[];
@@ -42,6 +41,7 @@ interface MonthlyFullSummaryTableProps {
   sisaAkhirBulan: number;
 }
 
+// Component
 const MonthlyFullSummaryTable = ({
   CATEGORY_MAP,
   INCOME_CATEGORIES,
@@ -147,3 +147,4 @@ const MonthlyFullSummaryTable = ({
 );
 
 export default MonthlyFullSummaryTable;
+

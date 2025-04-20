@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import BudgetEditModal from "./BudgetEditModal";
 import MonthlyFullSummaryTable from "./MonthlyFullSummaryTable";
 import { useBudgetEdit } from "./useBudgetEdit";
 
+// GROUP/CATEGORY/SUBCATEGORY STRUCTURE
 type Group = "Need" | "Want" | "Save";
 type CategoryMap = Record<
   Group,
@@ -21,6 +23,7 @@ type CategoryMap = Record<
   }
 >;
 
+// (Copy from your provided summary and category/subcategory mapping)
 const CATEGORY_MAP: CategoryMap = {
   Need: {
     label: "NEED",
@@ -85,6 +88,7 @@ const CATEGORY_MAP: CategoryMap = {
   }
 };
 
+// INCOME CATEGORY MAPPING (from your excel image)
 const INCOME_CATEGORIES = [
   { main: "Pendapatan", sub: "Gaji Kerja Suami", label: "Gaji Kerja Suami" },
   { main: "Pendapatan", sub: "Gaji Kerja Istri", label: "Gaji Kerja Istri" },
@@ -97,6 +101,7 @@ const INCOME_CATEGORIES = [
   { main: "Pendapatan", sub: "Penghasilan Lain lain", label: "Penghasilan Lain lain" },
 ];
 
+// Group transactions by month helper
 function groupTransactionsByMonth(transactions: Transaction[]) {
   const monthMap: Record<string, Transaction[]> = {};
   transactions.forEach((t) => {
@@ -107,6 +112,7 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
   return Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0]));
 }
 
+// The actual dialog/button component
 interface MonthlyFullSummaryButtonProps {
   transactions: Transaction[];
   onMonthChange?: (month: string | null) => void;
@@ -117,6 +123,7 @@ const MonthlyFullSummaryButton = ({ transactions, onMonthChange }: MonthlyFullSu
   const [open, setOpen] = useState(false);
   const [monthIndex, setMonthIndex] = useState(0);
 
+  // This could be loaded from an API or storage instead for real use
   const initialBudgets: Record<string, number> = {};
   (["Need", "Want", "Save"] as Group[]).forEach(group => {
     CATEGORY_MAP[group].categories.forEach(cat => {
@@ -264,3 +271,4 @@ const MonthlyFullSummaryButton = ({ transactions, onMonthChange }: MonthlyFullSu
 };
 
 export default MonthlyFullSummaryButton;
+
