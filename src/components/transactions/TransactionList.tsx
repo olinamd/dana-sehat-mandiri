@@ -1,22 +1,21 @@
 
 import { formatDate, formatRupiah } from "@/utils/formatters";
-import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-interface Transaction {
-  id: number;
-  date: string;
-  description: string;
-  amount: number;
-  category: string;
-  type: 'income' | 'expense';
-}
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface TransactionListProps {
   transactions: Transaction[];
+  onDeleteTransaction: (id: number) => void;
 }
 
-const TransactionList = ({ transactions }: TransactionListProps) => {
+const TransactionList = ({ transactions, onDeleteTransaction }: TransactionListProps) => {
+  const handleDelete = (id: number) => {
+    onDeleteTransaction(id);
+    toast.success("Transaksi berhasil dihapus");
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -25,6 +24,7 @@ const TransactionList = ({ transactions }: TransactionListProps) => {
           <TableHead>Deskripsi</TableHead>
           <TableHead>Kategori</TableHead>
           <TableHead className="text-right">Jumlah</TableHead>
+          <TableHead className="text-right">Aksi</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -32,7 +32,7 @@ const TransactionList = ({ transactions }: TransactionListProps) => {
           <TableRow key={transaction.id}>
             <TableCell>{formatDate(transaction.date)}</TableCell>
             <TableCell>{transaction.description}</TableCell>
-            <TableCell>{transaction.category}</TableCell>
+            <TableCell>{transaction.mainCategory}</TableCell>
             <TableCell className="text-right">
               <div className="flex items-center justify-end gap-2">
                 {transaction.type === "income" ? (
@@ -44,6 +44,16 @@ const TransactionList = ({ transactions }: TransactionListProps) => {
                   {formatRupiah(transaction.amount)}
                 </span>
               </div>
+            </TableCell>
+            <TableCell className="text-right">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => handleDelete(transaction.id)}
+                className="text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </TableCell>
           </TableRow>
         ))}

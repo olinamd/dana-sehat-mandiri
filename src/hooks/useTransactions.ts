@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Transaction } from "@/types";
 
 const mockTransactions = [
   {
@@ -46,11 +47,17 @@ const mockTransactions = [
 
 export const useTransactions = () => {
   const [showForm, setShowForm] = useState(false);
-  const [transactions] = useState(mockTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
 
   const filteredTransactions = (type?: 'income' | 'expense') => {
     if (!type) return transactions;
     return transactions.filter(t => t.type === type);
+  };
+
+  const deleteTransaction = (id: number) => {
+    setTransactions(prevTransactions => 
+      prevTransactions.filter(transaction => transaction.id !== id)
+    );
   };
 
   return {
@@ -58,5 +65,6 @@ export const useTransactions = () => {
     showForm,
     setShowForm,
     filteredTransactions,
+    deleteTransaction,
   };
 };
